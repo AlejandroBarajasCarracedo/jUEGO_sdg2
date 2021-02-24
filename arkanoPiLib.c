@@ -581,6 +581,18 @@ void ReseteaJuego (fsm_t* this) {
 	tipo_arkanoPi* p_arkanoPi;
 	p_arkanoPi = (tipo_arkanoPi*)(this->user_data);
 
+	tipo_pelota *p_pelota;
+	p_pelota = (tipo_pelota*)(this->user_data);
+
+	tipo_pantalla *p_pantalla;
+	p_pantalla = (tipo_pantalla*)(this->user_data);
+
+	tipo_pala *p_pala;
+	p_pala = (tipo_pala*)(this->user_data);
+
+	tipo_pantalla ladrillos;
+	ladrillos = (tipo_pantalla*)(this->user_data);
+
 	//
 
 	piLock (SYSTEM_FLAGS_KEY);
@@ -590,6 +602,38 @@ void ReseteaJuego (fsm_t* this) {
 	flags &= ~FLAG_TIMER_JUEGO;
 	flags &= ~FLAG_FIN_JUEGO;
 	piUnlock (SYSTEM_FLAGS_KEY);
+
+	piLock(MATRIX_KEY);
+	ActualizarJuego(this);
+	piUnlock(MATRIX_KEY);
+
+	piLock(MATRIX_KEY);
+	ReseteaMatriz(p_pantalla);
+	piUnlock(MATRIX_KEY);
+
+	piLock(MATRIX_KEY);
+	ResetArkanoPi(p_arkanoPi);
+	piUnlock(MATRIX_KEY);
+
+	piLock(MATRIX_KEY);
+	InicializaLadrillos(ladrillos);
+	piUnlock(MATRIX_KEY);
+
+	piLock(MATRIX_KEY);
+	InicializaPelota(p_pelota);
+	piUnlock(MATRIX_KEY);
+
+	piLock(MATRIX_KEY);
+	InicializaPala(p_pala);
+	piUnlock(MATRIX_KEY);
+
+	piLock(MATRIX_KEY);
+	InicializaPosiblesTrayectorias(p_pelota);
+	piUnlock(MATRIX_KEY);
+
+	piLock(MATRIX_KEY);
+	InicializaArkanoPi(p_arkanoPi, int debug);		//No se si es necesario ponerlo y porque da mal xd
+	piUnlock(MATRIX_KEY);
 
 	piLock (STD_IO_BUFFER_KEY);
 	printf("ReseteaJuego\n");
