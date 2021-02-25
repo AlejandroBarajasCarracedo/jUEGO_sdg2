@@ -1,4 +1,3 @@
-
 #include "arkanoPi.h"
 
 volatile int flags = 0;
@@ -8,17 +7,14 @@ TipoSistema sistema;
 // Declaracion del objeto teclado
 TipoTeclado teclado = {
 	.columnas = {
-			teclado.columnas
 		// A completar por el alumno...
 		// ...
 	},
 	.filas = {
-			teclado.filas
 		// A completar por el alumno...
 		// ...
 	},
 	.rutinas_ISR = {
-			//int debounceTime[NUM_FILAS_TECLADO];
 		// A completar por el alumno...
 		// ...
 	},
@@ -56,8 +52,9 @@ TipoLedDisplay led_display = {
 // como el thread de exploración del teclado del PC
 int ConfiguraInicializaSistema (TipoSistema *p_sistema) {
 	int result = 0;
+	//Faltan cosas
+	//p_sistema->arkanoPi.p_pantalla = &(led_display.pantalla);		//Para evitar problemas utilizar en al main porque aparece la variable globla sistema
 
-	//
 	piLock (SYSTEM_FLAGS_KEY);
 	flags = 0;
 	piUnlock (SYSTEM_FLAGS_KEY);
@@ -116,7 +113,7 @@ PI_THREAD (thread_explora_teclado_PC) {
 					piUnlock (SYSTEM_FLAGS_KEY);
 					break;
 				case 'c':
-					piLock (SYSTEM_FLAGS_KEY);
+					piLock (KEYBOARD_KEY);
 					flags |= FLAG_TIMER_JUEGO;
 					piUnlock (SYSTEM_FLAGS_KEY);
 					break;
@@ -127,12 +124,12 @@ PI_THREAD (thread_explora_teclado_PC) {
 					piUnlock (SYSTEM_FLAGS_KEY);
 					break;
 
-				case 's':
+				case 's':		//Para iniciar el juego
 					//Editar por el alumno..
 
 					piLock (SYSTEM_FLAGS_KEY);
-					flags |= FLAG_FIN_JUEGO;
-					piUnlock (SYSTEM_FLAGS_KEY)
+					flags |= FLAG_BOTON;
+					piUnlock (SYSTEM_FLAGS_KEY);
 					printf("Tecla S pulsada!\n");
 					fflush(stdout);
 					break;
@@ -161,7 +158,7 @@ void delay_until (unsigned int next) {
 
 int main () {
 	unsigned int next;
-
+	sistema.arkanoPi.p_pantalla = &(led_display.pantalla);
 	// Maquina de estados: lista de transiciones
 	// {EstadoOrigen, CondicionDeDisparo, EstadoFinal, AccionesSiTransicion }
 	fsm_trans_t arkanoPi[] = {
@@ -181,7 +178,7 @@ int main () {
 
 	// ..
 	// Configuracion e inicializacion del sistema:
-	ConfiguraInicializaSistema(arkanoPi_fsm);
+
 
 	next = millis();
 	while (1) {
