@@ -16,7 +16,7 @@
 #include "fsm.h"
 #include "tmr.h"
 
-#define CLK_MS 					1
+#define CLK_MS 1 //periodo de actualizacion de la maquina de estados
 
 // ATENCION: Valores a modificar por el alumno
 // INTERVALO DE GUARDA ANTI-REBOTES
@@ -29,10 +29,10 @@
 
 // CLAVES PARA MUTEX
 // ATENCION: Valores a modificar por el alumno
-#define	KEYBOARD_KEY		0
-#define	SYSTEM_FLAGS_KEY	0
-#define	MATRIX_KEY			0
-#define	STD_IO_BUFFER_KEY	0
+#define	KEYBOARD_KEY		0		//Cuando utilizo taclado matricial de la raspberry
+#define	SYSTEM_FLAGS_KEY	1
+#define	MATRIX_KEY			2		//Matriz de ladrillos
+#define	STD_IO_BUFFER_KEY	3		//Para el uso mas concreto de la matriz
 
 // Distribucion de pines GPIO empleada para el teclado y el display
 // ATENCION: Valores a modificar por el alumno
@@ -61,11 +61,11 @@
 // ATENCION: Valores a modificar por el alumno
 #define FLAG_MOV_ARRIBA 	0x00
 #define FLAG_MOV_ABAJO		0x00
-#define FLAG_MOV_DERECHA 	0x00
-#define FLAG_MOV_IZQUIERDA 	0x00
-#define FLAG_TIMER_JUEGO	0x00
-#define FLAG_BOTON 			0x00
-#define FLAG_FIN_JUEGO		0x00
+#define FLAG_MOV_DERECHA 	0x01
+#define FLAG_MOV_IZQUIERDA 	0x02
+#define FLAG_TIMER_JUEGO	0x04
+#define FLAG_BOTON 			0x08
+#define FLAG_FIN_JUEGO		0x10
 
 enum fsm_state {
 	WAIT_START,

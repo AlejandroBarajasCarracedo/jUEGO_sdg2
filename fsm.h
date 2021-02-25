@@ -23,7 +23,7 @@ typedef struct fsm_trans_t {
 struct fsm_t {
   int current_state;
   fsm_trans_t* tt;
-  void* user_data;
+  void* user_data;		//puntero a nada o a cualquier cosa
 };
 
 fsm_t* fsm_new (int state, fsm_trans_t* tt, void* user_data);
