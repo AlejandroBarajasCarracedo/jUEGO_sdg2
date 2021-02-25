@@ -79,25 +79,23 @@ void InicializaPala(tipo_pala *p_pala) {
 void InicializaPosiblesTrayectorias(tipo_pelota *p_pelota) {
 	p_pelota->num_posibles_trayectorias = 0;
 	p_pelota->posibles_trayectorias[ARRIBA_IZQUIERDA].xv = -1;
-	p_pelota->posibles_trayectorias[ARRIBA_IZQUIERDA].yv = 1;
+	p_pelota->posibles_trayectorias[ARRIBA_IZQUIERDA].yv = -1;
 	p_pelota->num_posibles_trayectorias++;
 	p_pelota->posibles_trayectorias[ARRIBA].xv = 0;
-	p_pelota->posibles_trayectorias[ARRIBA].yv = 1;
+	p_pelota->posibles_trayectorias[ARRIBA].yv = -1;
 	p_pelota->num_posibles_trayectorias++;
 	p_pelota->posibles_trayectorias[ARRIBA_DERECHA].xv = 1;
-	p_pelota->posibles_trayectorias[ARRIBA_DERECHA].yv = 1;
+	p_pelota->posibles_trayectorias[ARRIBA_DERECHA].yv = -1;
 	p_pelota->num_posibles_trayectorias++;
-
 	p_pelota->posibles_trayectorias[ABAJO_DERECHA].xv = 1;
-	p_pelota->posibles_trayectorias[ABAJO_DERECHA].yv = -1;
+	p_pelota->posibles_trayectorias[ABAJO_DERECHA].yv = 1;
 	p_pelota->num_posibles_trayectorias++;
 	p_pelota->posibles_trayectorias[ABAJO].xv = 0;
-	p_pelota->posibles_trayectorias[ABAJO].yv = -1;
+	p_pelota->posibles_trayectorias[ABAJO].yv = 1;
 	p_pelota->num_posibles_trayectorias++;
 	p_pelota->posibles_trayectorias[ABAJO_IZQUIERDA].xv = -1;
-	p_pelota->posibles_trayectorias[ABAJO_IZQUIERDA].yv = -1;
+	p_pelota->posibles_trayectorias[ABAJO_IZQUIERDA].yv = 1;
 	p_pelota->num_posibles_trayectorias++;
-
 	//p_pelota->posibles_trayectorias[IZQUIERDA].xv = -1;
 	//p_pelota->posibles_trayectorias[IZQUIERDA].yv = 0;
 	//p_pelota->num_posibles_trayectorias++;
