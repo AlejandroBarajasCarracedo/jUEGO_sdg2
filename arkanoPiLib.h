@@ -15,8 +15,8 @@ enum t_direccion {
 	ABAJO_DERECHA,
 	ABAJO,
 	ABAJO_IZQUIERDA,
-	IZQUIERDA, // NO PERMITIDA
-	DERECHA, // NO PERMITIDA
+	IZQUIERDA, // NO PERMITIDA salvo para la pala
+	DERECHA, // NO PERMITIDA salvo para la pala
 };
 
 // CONSTANTES DEL JUEGO

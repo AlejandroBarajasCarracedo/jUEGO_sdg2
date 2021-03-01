@@ -82,7 +82,7 @@ void InicializaPosiblesTrayectorias(tipo_pelota *p_pelota) {
 	p_pelota->posibles_trayectorias[ARRIBA_IZQUIERDA].yv = -1;
 	p_pelota->num_posibles_trayectorias++;
 	p_pelota->posibles_trayectorias[ARRIBA].xv = 0;
-	p_pelota->posibles_trayectorias[ARRIBA].yv = -1;
+	p_pelota->posibles_trayectorias[ARRIBA].yv = 1;
 	p_pelota->num_posibles_trayectorias++;
 	p_pelota->posibles_trayectorias[ARRIBA_DERECHA].xv = 1;
 	p_pelota->posibles_trayectorias[ARRIBA_DERECHA].yv = -1;
@@ -96,6 +96,7 @@ void InicializaPosiblesTrayectorias(tipo_pelota *p_pelota) {
 	p_pelota->posibles_trayectorias[ABAJO_IZQUIERDA].xv = -1;
 	p_pelota->posibles_trayectorias[ABAJO_IZQUIERDA].yv = 1;
 	p_pelota->num_posibles_trayectorias++;
+
 	//p_pelota->posibles_trayectorias[IZQUIERDA].xv = -1;
 	//p_pelota->posibles_trayectorias[IZQUIERDA].yv = 0;
 	//p_pelota->num_posibles_trayectorias++;
@@ -162,7 +163,7 @@ void ActualizaPantalla(tipo_arkanoPi* p_arkanoPi, int debug) {
 		(tipo_pelota*)(&(p_arkanoPi->pelota)),
 		(tipo_pantalla*)(p_arkanoPi->p_pantalla));
 
-	if (debug) {		//para imprimir datos de prueba, suele iniciar a 1 para probar
+	if (debug) {
 		printf("\nDESPUES DE PintaPelota\n");
 		fflush(stdout);
 		PintaPantallaPorTerminal((tipo_pantalla*)(p_arkanoPi->p_pantalla));
@@ -351,7 +352,7 @@ int CompruebaFinalJuego(fsm_t* this) {
 
 	piLock (SYSTEM_FLAGS_KEY);
 	result = (flags & FLAG_BOTON);
-	iUnlock (SYSTEM_FLAGS_KEY);
+	piUnlock (SYSTEM_FLAGS_KEY);
 
 	return result;
 }
@@ -365,29 +366,21 @@ int CompruebaFinalJuego(fsm_t* this) {
 
 void InicializaJuego(fsm_t* this) {
 	tipo_arkanoPi *p_arkanoPi;
-		p_arkanoPi = (tipo_arkanoPi*)(this->user_data);
-		tipo_pelota *p_pelota;
-		p_pelota = (tipo_pelota*)(this->user_data);
-		tipo_pantalla *p_pantalla;
-		p_pantalla = (tipo_pantalla*)(this->user_data);
-		tipo_pala *p_pala;
-		p_pala = (tipo_pala*)(this->user_data);
-		tipo_pantalla ladrillos;
-		ladrillos = (tipo_pantalla*)(this->user_data);
+	p_arkanoPi = (tipo_arkanoPi*)(this->user_data);
 
-		piLock(SYSTEM_FLAGS_KEY);
-		flags &= ~FLAG_BOTON;
-		piUnlock(SYSTEM_FLAGS_KEY);
+	piLock(SYSTEM_FLAGS_KEY);
+	flags &= ~FLAG_BOTON;
+	piUnlock(SYSTEM_FLAGS_KEY);
 
-		InicializaLadrillos(p_pantalla);
-		InicializaPelota(p_pelota);
-		InicializaPala(p_pala);
-		InicializaPosiblesTrayectorias(p_pelota);
-		InicializaArkanoPi(p_arkanoPi, 1);	//valor del parametro debug?? 1?
+	InicializaLadrillos(&(p_arkanoPi->p_pantalla));  //parametro: pantalla
+	InicializaPelota(&(p_arkanoPi->pelota));
+	InicializaPala(&(p_arkanoPi->pala));
+	InicializaPosiblesTrayectorias(&(p_arkanoPi->pelota));
+	InicializaArkanoPi(p_arkanoPi, 1);	//valor del parametro debug?? 1?
 
-		piLock (STD_IO_BUFFER_KEY);
-		printf("InicializaJuego\n");
-		piUnlock (STD_IO_BUFFER_KEY);
+	piLock (STD_IO_BUFFER_KEY);
+	printf("InicializaJuego\n");
+	piUnlock (STD_IO_BUFFER_KEY);
 
 
 	//pseudoWiringPiEnableDisplay(1);
@@ -409,10 +402,10 @@ void MuevePalaIzquierda (fsm_t* this) {
 	flags &= ~FLAG_MOV_IZQUIERDA;
 	piUnlock (SYSTEM_FLAGS_KEY);
 
-	ActualizaPosicionPala(p_arkanoPi, IZQUIERDA);
+	ActualizaPosicionPala(&(p_arkanoPi->pala), IZQUIERDA);		//para pasar la direcciopn y que me diga el puntero
 
 	piLock(MATRIX_KEY);
-	ActualizaPantalla(p_arkanoPi,1);
+	ActualizaPantalla(p_arkanoPi,1);		//p_ denota puntero
 	piUnlock(MATRIX_KEY);
 
 	piLock (STD_IO_BUFFER_KEY);
@@ -426,16 +419,15 @@ void MuevePalaIzquierda (fsm_t* this) {
 void MuevePalaDerecha (fsm_t* this) {
 	tipo_arkanoPi* p_arkanoPi;
 	p_arkanoPi = (tipo_arkanoPi*)(this->user_data);
-	tipo_pala *p_pala;
-	p_pala = (tipo_pala*)(this->user_data);
+	/*tipo_pala *p_pala;
+	p_pala = (tipo_pala*)(this->user_data);*/
 
 	//
-
 	piLock (SYSTEM_FLAGS_KEY);
 	flags &= ~FLAG_MOV_DERECHA;
 	piUnlock (SYSTEM_FLAGS_KEY);
 
-	ActualizaPosicionPala(p_pala, DERECHA);
+	ActualizaPosicionPala(&(p_arkanoPi->pala), DERECHA);
 
 	piLock(MATRIX_KEY);
 	ActualizaPantalla(p_arkanoPi,1);
@@ -459,55 +451,55 @@ void MuevePalaDerecha (fsm_t* this) {
 
 void ActualizarJuego (fsm_t* this) {
 	tipo_arkanoPi* p_arkanoPi;
-	p_arkanoPi = (tipo_arkanoPi*)((*this).user_data);
-	//tipo_pelota *p_pelota;
-	//p_pelota = (tipo_pelota*)(this->user_data);
-	/*tipo_trayectoria *trayectoria;
-	trayectoria = (tipo_trayectoria*)(this->user_data);*/
+	p_arkanoPi = (tipo_arkanoPi*)(this->user_data);
+	/*tipo_pelota *p_pelota;
+	p_pelota = (tipo_pelota*)(this->user_data);
+	tipo_trayectoria *trayectoria;
+	trayectoria = (tipo_trayectoria*)(this->user_data);
 	tipo_pantalla* p_ladrillos;
 	p_ladrillos = (tipo_pantalla*)(this->user_data);
 	tipo_pala *p_pala;
-	p_pala = (tipo_pala*)(this->user_data);
-
-	//arkanoPi.pelota...
+	p_pala = (tipo_pala*)(this->user_data);*/
 
 	piLock (SYSTEM_FLAGS_KEY);
 	flags &= ~FLAG_TIMER_JUEGO;
 	piUnlock (SYSTEM_FLAGS_KEY);
 
-	ActualizaPosicionPelota(p_pelota);
+	ActualizaPosicionPelota(&(p_arkanoPi->pelota));
 	if(CompruebaReboteLadrillo(p_arkanoPi)){
-		p_pelota->trayectoria.yv = -p_pelota->trayectoria.yv;
+		p_arkanoPi->pelota.trayectoria.yv = -p_arkanoPi->pelota.trayectoria.yv;
 	}
-	if(CompruebaReboteParedesVerticales(p_arkanoPi)){
-		p_pelota.trayectoria.xv = -p_pelota.trayectoria.xv;
+	if(CompruebaReboteParedesVerticales(*p_arkanoPi)){
+		p_arkanoPi->pelota.trayectoria.xv = -p_arkanoPi->pelota.trayectoria.xv;
 	}
-	if(CompruebaReboteTecho(p_arkanoPi)){
-		p_pelota.trayectoria.yv = -p_pelota.trayectoria.yv;
+	if(CompruebaReboteTecho(*p_arkanoPi)){
+		p_arkanoPi->pelota.trayectoria.yv = -p_arkanoPi->pelota.trayectoria.yv;
 	}
-	CompruebaRebotePala(p_arkanoPi);
-	if(CalculaLadrillosRestantes(p_ladrillos) <= 0){
+	CompruebaRebotePala(*p_arkanoPi);
+	if(CalculaLadrillosRestantes(&(p_arkanoPi->ladrillos)) <= 0){
 		piLock(SYSTEM_FLAGS_KEY);
 		flags |= FLAG_FIN_JUEGO;
 		piUnlock(SYSTEM_FLAGS_KEY);
 		return;
 	}
-	if(CompruebaFallo(p_arkanoPi)) {
+	if(CompruebaFallo(*p_arkanoPi)) {
 		piLock(SYSTEM_FLAGS_KEY);
 		flags |= FLAG_FIN_JUEGO;
 		piUnlock(SYSTEM_FLAGS_KEY);
+
+		piLock (STD_IO_BUFFER_KEY);		//DEberia de aparecer despues de fin juego
+		printf("GAMEOVER");
+		piUnlock (STD_IO_BUFFER_KEY);
 		return;
-		printf("GAME OVER");
 	}else{
-		if(p_pelota.x + p_pelota.trayectoria.xv - p_pala.x == 0){
-			CambiarDireccionPelota(p_pelota,ARRIBA_IZQUIERDA);
-		}else if(p_pelota.x + p_pelota.trayectoria.xv - p_pala.x == 1){
-			CambiarDireccionPelota(p_pelota,ARRIBA);
+		if(p_arkanoPi->pelota.x + p_arkanoPi->pelota.trayectoria.xv - p_arkanoPi->pala.x == 0){
+			CambiarDireccionPelota(&(p_arkanoPi->pelota),ARRIBA_IZQUIERDA);
+		}else if(p_arkanoPi->pelota.x + p_arkanoPi->pelota.trayectoria.xv - p_arkanoPi->pala.x == 1){
+			CambiarDireccionPelota(&(p_arkanoPi->pelota),ARRIBA);
 		}else{
-			CambiarDireccionPelota(p_pelota,ARRIBA_DERECHA);
+			CambiarDireccionPelota(&(p_arkanoPi->pelota),ARRIBA_DERECHA);
 		}
 	}
-
 
 	piLock(MATRIX_KEY);
 	ActualizaPantalla(p_arkanoPi,1);
@@ -550,8 +542,8 @@ void FinalJuego (fsm_t* this) {
 void ReseteaJuego (fsm_t* this) {
 	tipo_arkanoPi* p_arkanoPi;
 	p_arkanoPi = (tipo_arkanoPi*)(this->user_data);
-	tipo_pantalla* p_pantalla;
-	p_pantalla = (tipo_pantalla*)(this->user_data);
+	/*tipo_pantalla* p_pantalla;
+	p_pantalla = (tipo_pantalla*)(this->user_data);*/
 
 	//
 
@@ -562,7 +554,7 @@ void ReseteaJuego (fsm_t* this) {
 	ResetArkanoPi(p_arkanoPi);
 
 	piLock(MATRIX_KEY);
-	ReseteaMatriz(p_pantalla);
+	ReseteaPantalla(p_arkanoPi->p_pantalla);
 	piUnlock(MATRIX_KEY);
 
 	piLock (STD_IO_BUFFER_KEY);
