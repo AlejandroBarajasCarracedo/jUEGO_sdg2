@@ -372,17 +372,24 @@ void InicializaJuego(fsm_t* this) {
 	flags &= ~FLAG_BOTON;
 	piUnlock(SYSTEM_FLAGS_KEY);
 
-	InicializaLadrillos(&(p_arkanoPi->ladrillos));  //parametro: ladrillos
-	InicializaPelota(&(p_arkanoPi->pelota));
-	InicializaPala(&(p_arkanoPi->pala));
-	InicializaPosiblesTrayectorias(&(p_arkanoPi->pelota));
+	//Colocar los tmrs!!!
+
+	//InicializaLadrillos(&(p_arkanoPi->ladrillos));  //parametro: ladrillos
+	//InicializaPelota(&(p_arkanoPi->pelota));
+	//InicializaPala(&(p_arkanoPi->pala));
+	//InicializaPosiblesTrayectorias(&(p_arkanoPi->pelota));
 	InicializaArkanoPi(p_arkanoPi, 1);	//valor del parametro debug?? 1?
+
+	piLock(MATRIX_KEY);
+	ActualizaPantalla(p_arkanoPi,1);
+	piUnlock(MATRIX_KEY);
 
 	tmr_startms((tmr_t*)(this->user_data), TIMEOUT_ACTUALIZA_JUEGO);
 
-	piLock (STD_IO_BUFFER_KEY);
-	printf("InicializaJuego\n");
-	piUnlock (STD_IO_BUFFER_KEY);
+
+	//piLock (STD_IO_BUFFER_KEY);
+	//printf("InicializaJuego\n");
+	//piUnlock (STD_IO_BUFFER_KEY);
 
 
 	//pseudoWiringPiEnableDisplay(1);
@@ -410,9 +417,9 @@ void MuevePalaIzquierda (fsm_t* this) {
 	ActualizaPantalla(p_arkanoPi,1);		//p_ denota puntero
 	piUnlock(MATRIX_KEY);
 
-	piLock (STD_IO_BUFFER_KEY);
-	printf("MuevePalaIzquierda\n");
-	piUnlock (STD_IO_BUFFER_KEY);
+	//piLock (STD_IO_BUFFER_KEY);
+	//printf("MuevePalaIzquierda\n");
+	//piUnlock (STD_IO_BUFFER_KEY);
 }
 
 // void MuevePalaDerecha (void): función similar a la anterior
@@ -435,9 +442,9 @@ void MuevePalaDerecha (fsm_t* this) {
 	ActualizaPantalla(p_arkanoPi,1);
 	piUnlock(MATRIX_KEY);
 
-	piLock (STD_IO_BUFFER_KEY);
-	printf("MuevePalaDerecha\n");
-	piUnlock (STD_IO_BUFFER_KEY);
+	//piLock (STD_IO_BUFFER_KEY);
+	//printf("MuevePalaDerecha\n");
+	//piUnlock (STD_IO_BUFFER_KEY);
 }
 
 // void ActualizarJuego (void): función encargada de actualizar la
@@ -462,6 +469,8 @@ void ActualizarJuego (fsm_t* this) {
 	p_ladrillos = (tipo_pantalla*)(this->user_data);
 	tipo_pala *p_pala;
 	p_pala = (tipo_pala*)(this->user_data);*/
+
+	//colocar los tmrs!!!
 
 	piLock (SYSTEM_FLAGS_KEY);
 	flags &= ~FLAG_TIMER_JUEGO;
@@ -489,9 +498,9 @@ void ActualizarJuego (fsm_t* this) {
 		flags |= FLAG_FIN_JUEGO;
 		piUnlock(SYSTEM_FLAGS_KEY);
 
-		piLock (STD_IO_BUFFER_KEY);		//DEberia de aparecer despues de fin juego
-		printf("GAMEOVER");
-		piUnlock (STD_IO_BUFFER_KEY);
+		//piLock (STD_IO_BUFFER_KEY);		//DEberia de aparecer despues de fin juego
+		//printf("GAMEOVER");
+		//piUnlock (STD_IO_BUFFER_KEY);
 		return;
 	}else{
 		if(p_arkanoPi->pelota.x + p_arkanoPi->pelota.trayectoria.xv - p_arkanoPi->pala.x == 0){
@@ -507,9 +516,9 @@ void ActualizarJuego (fsm_t* this) {
 	ActualizaPantalla(p_arkanoPi,1);
 	piUnlock(MATRIX_KEY);
 
-	piLock (STD_IO_BUFFER_KEY);
-	printf("ActualizarJuego\n");
-	piUnlock (STD_IO_BUFFER_KEY);
+	//piLock (STD_IO_BUFFER_KEY);
+	//printf("ActualizarJuego\n");
+	//piUnlock (STD_IO_BUFFER_KEY);
 }
 
 // void FinalJuego (void): función encargada de mostrar en la ventana de
@@ -530,9 +539,9 @@ void FinalJuego (fsm_t* this) {
 	ActualizaPantalla(p_arkanoPi,1);
 	piUnlock(MATRIX_KEY);*/
 
-	piLock (STD_IO_BUFFER_KEY);
-	printf("FinalJuego\n");
-	piUnlock (STD_IO_BUFFER_KEY);
+	//piLock (STD_IO_BUFFER_KEY);
+	//printf("FinalJuego\n");
+	//piUnlock (STD_IO_BUFFER_KEY);
 
 	//pseudoWiringPiEnableDisplay(0);
 }
@@ -559,9 +568,9 @@ void ReseteaJuego (fsm_t* this) {
 	ReseteaPantalla(p_arkanoPi->p_pantalla);
 	piUnlock(MATRIX_KEY);
 
-	piLock (STD_IO_BUFFER_KEY);
-	printf("ReseteaJuego\n");
-	piUnlock (STD_IO_BUFFER_KEY);
+	//piLock (STD_IO_BUFFER_KEY);
+	//printf("ReseteaJuego\n");
+	//piUnlock (STD_IO_BUFFER_KEY);
 }
 
 //------------------------------------------------------

@@ -160,8 +160,8 @@ int main () {
 
 	unsigned int next;
 
-
-	tmr_t* tmr = tmr_new (tmr_actualizacion_juego_isr);		//algo falla por el arkanoPi
+	//sistema.arkanoPi.tmr_actualizacion_juego = tmr new;
+	//sistema.arkanoPi.tmr_actualizacion_juego = tmr_new (tmr_actualizacion_juego_isr);		//algo falla por el arkanoPi
 
 	// Maquina de estados: lista de transiciones
 	// {EstadoOrigen, CondicionDeDisparo, EstadoFinal, AccionesSiTransicion }
@@ -176,9 +176,11 @@ int main () {
 	};
 
 
-	fsm_t* interruptor_tmr_fsm = fsm_new (WAIT_START, arkanoPi, sistema.arkanoPi.tmr_actualizacion_juego);		//tmr???
+	//fsm_t* interruptor_tmr_fsm = fsm_new (WAIT_START, arkanoPi, sistema.arkanoPi.tmr_actualizacion_juego);		//tmr???
 	// Configuracion e incializacion del sistema
 	ConfiguraInicializaSistema (&sistema);
+
+	sistema.arkanoPi.tmr_actualizacion_juego = tmr_new (tmr_actualizacion_juego_isr);
 
 	fsm_t* arkanoPi_fsm = fsm_new (WAIT_START, arkanoPi, &sistema.arkanoPi);
 
@@ -195,6 +197,6 @@ int main () {
 		next += CLK_MS;
 		delay_until (next);
 	}
-	tmr_destroy ((tmr_t*)(interruptor_tmr_fsm->user_data));
+	tmr_destroy ((tmr_t*)(sistema.arkanoPi.tmr_actualizacion_juego));
 	fsm_destroy (arkanoPi_fsm);
 }
