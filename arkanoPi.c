@@ -59,7 +59,7 @@ int ConfiguraInicializaSistema (TipoSistema *p_sistema) {
 	flags = 0;
 	piUnlock (SYSTEM_FLAGS_KEY);
 
-	InicializaJuego(p_sistema);
+	//InicializaJuego(p_sistema);  No debe aparecer aqui
 
 	piLock (STD_IO_BUFFER_KEY);
 	printf("\nIniciando el juego...\n");
@@ -130,7 +130,7 @@ PI_THREAD (thread_explora_teclado_PC) {
 					piLock (SYSTEM_FLAGS_KEY);
 					flags |= FLAG_BOTON;
 					piUnlock (SYSTEM_FLAGS_KEY);
-					printf("Tecla S pulsada!\n");
+					printf("Tecla T pulsada!\n");
 					fflush(stdout);
 					break;
 
@@ -160,6 +160,9 @@ int main () {
 
 	unsigned int next;
 
+
+	tmr_t* tmr = tmr_new (tmr_actualizacion_juego_isr);		//algo falla por el arkanoPi
+
 	// Maquina de estados: lista de transiciones
 	// {EstadoOrigen, CondicionDeDisparo, EstadoFinal, AccionesSiTransicion }
 	fsm_trans_t arkanoPi[] = {
@@ -172,10 +175,12 @@ int main () {
 		{-1, NULL, -1, NULL },
 	};
 
+
+	fsm_t* interruptor_tmr_fsm = fsm_new (WAIT_START, arkanoPi, sistema.arkanoPi.tmr_actualizacion_juego);		//tmr???
 	// Configuracion e incializacion del sistema
 	ConfiguraInicializaSistema (&sistema);
 
-	fsm_t* arkanoPi_fsm = fsm_new (WAIT_START, arkanoPi, &sistema);
+	fsm_t* arkanoPi_fsm = fsm_new (WAIT_START, arkanoPi, &sistema.arkanoPi);
 
 	// ..
 	sistema.arkanoPi.p_pantalla = &(led_display.pantalla);
@@ -190,6 +195,6 @@ int main () {
 		next += CLK_MS;
 		delay_until (next);
 	}
-
+	tmr_destroy ((tmr_t*)(interruptor_tmr_fsm->user_data));
 	fsm_destroy (arkanoPi_fsm);
 }

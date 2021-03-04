@@ -372,11 +372,13 @@ void InicializaJuego(fsm_t* this) {
 	flags &= ~FLAG_BOTON;
 	piUnlock(SYSTEM_FLAGS_KEY);
 
-	InicializaLadrillos(&(p_arkanoPi->p_pantalla));  //parametro: pantalla
+	InicializaLadrillos(&(p_arkanoPi->ladrillos));  //parametro: ladrillos
 	InicializaPelota(&(p_arkanoPi->pelota));
 	InicializaPala(&(p_arkanoPi->pala));
 	InicializaPosiblesTrayectorias(&(p_arkanoPi->pelota));
 	InicializaArkanoPi(p_arkanoPi, 1);	//valor del parametro debug?? 1?
+
+	tmr_startms((tmr_t*)(this->user_data), TIMEOUT_ACTUALIZA_JUEGO);
 
 	piLock (STD_IO_BUFFER_KEY);
 	printf("InicializaJuego\n");
@@ -569,4 +571,9 @@ void ReseteaJuego (fsm_t* this) {
 void tmr_actualizacion_juego_isr(union sigval value) {
 	// A completar por el alumno
 	// ...
+
+	piLock (SYSTEM_FLAGS_KEY);
+	flags &= ~FLAG_TIMER_JUEGO;
+	piUnlock(SYSTEM_FLAGS_KEY);
+
 }
