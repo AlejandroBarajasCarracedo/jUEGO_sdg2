@@ -59,8 +59,6 @@ int ConfiguraInicializaSistema (TipoSistema *p_sistema) {
 	flags = 0;
 	piUnlock (SYSTEM_FLAGS_KEY);
 
-	//InicializaJuego(p_sistema);  No debe aparecer aqui
-
 	piLock (STD_IO_BUFFER_KEY);
 	printf("\nIniciando el juego...\n");
 	piUnlock (STD_IO_BUFFER_KEY);
@@ -112,11 +110,12 @@ PI_THREAD (thread_explora_teclado_PC) {
 					flags |= FLAG_MOV_IZQUIERDA;
 					piUnlock (SYSTEM_FLAGS_KEY);
 					break;
+					/*
 				case 'c':
-					piLock (KEYBOARD_KEY);
+					piLock (SYSTEM_FLAGS_KEY);
 					flags |= FLAG_TIMER_JUEGO;
 					piUnlock (SYSTEM_FLAGS_KEY);
-					break;
+					break;*/
 
 				case 'd':
 					piLock (SYSTEM_FLAGS_KEY);
@@ -160,9 +159,6 @@ int main () {
 
 	unsigned int next;
 
-	//sistema.arkanoPi.tmr_actualizacion_juego = tmr new;
-	//sistema.arkanoPi.tmr_actualizacion_juego = tmr_new (tmr_actualizacion_juego_isr);		//algo falla por el arkanoPi
-
 	// Maquina de estados: lista de transiciones
 	// {EstadoOrigen, CondicionDeDisparo, EstadoFinal, AccionesSiTransicion }
 	fsm_trans_t arkanoPi[] = {
@@ -175,28 +171,48 @@ int main () {
 		{-1, NULL, -1, NULL },
 	};
 
-
-	//fsm_t* interruptor_tmr_fsm = fsm_new (WAIT_START, arkanoPi, sistema.arkanoPi.tmr_actualizacion_juego);		//tmr???
 	// Configuracion e incializacion del sistema
 	ConfiguraInicializaSistema (&sistema);
+	// ..
+	sistema.arkanoPi.p_pantalla = &(led_display.pantalla);
 
 	sistema.arkanoPi.tmr_actualizacion_juego = tmr_new (tmr_actualizacion_juego_isr);
 
+
 	fsm_t* arkanoPi_fsm = fsm_new (WAIT_START, arkanoPi, &sistema.arkanoPi);
 
-	// ..
-	sistema.arkanoPi.p_pantalla = &(led_display.pantalla);
+	fsm_t* teclado_fsm = fsm_new (TECLADO_ESPERA_COLUMNA, fsm_trans_excitacion_columnas, &(teclado));
+
+	fsm_t* tecla_fsm = fsm_new (TECLADO_ESPERA_TECLA, fsm_trans_deteccion_pulsaciones, &(teclado));
 
 	next = millis();
 	while (1) {
 		fsm_fire (arkanoPi_fsm);
-
+		fsm_fire(teclado_fsm);
+		fsm_fire(tecla_fsm);
 		// A completar por el alumno...
 		// ...
-
 		next += CLK_MS;
 		delay_until (next);
 	}
+
 	tmr_destroy ((tmr_t*)(sistema.arkanoPi.tmr_actualizacion_juego));
 	fsm_destroy (arkanoPi_fsm);
+	fsm_destroy (teclado_fsm);
+	fsm_destroy (tecla_fsm);
+
+
+	/*fsm_t* teclado_fsm = fsm_new (TECLADO_ESPERA_COLUMNA, fsm_trans_excitacion_columnas, &(teclado));
+
+	fsm_t* tecla_fsm = fsm_new (TECLADO_ESPERA_TECLA, fsm_trans_deteccion_pulsaciones, &(teclado));
+
+	next = millis();
+
+	while(1) {
+		fsm_fire(teclado_fsm);
+		fsm_fire(tecla_fsm);
+		next += CLK_MS;
+		delay_unntil(next);
+		}*/
 }
+

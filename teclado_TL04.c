@@ -24,6 +24,7 @@ fsm_trans_t fsm_trans_deteccion_pulsaciones[] = {
 //------------------------------------------------------
 
 void InicializaTeclado(TipoTeclado *p_teclado) {
+
 	// A completar por el alumno...
 	// ...
 }
